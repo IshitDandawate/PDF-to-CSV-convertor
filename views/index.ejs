@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF to CSV Converter</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: "Anton", sans-serif;
+            font-weight: 400;
+            font-style: normal;
+            /* font-family: 'Roboto', sans-serif; */
+            overflow: hidden; 
+        }
+
+        .video-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1; 
+            filter: blur(2px);
+        }
+
+        .video-background video {
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        #status{
+            font-size: 2em;
+        }
+
+        .card-text{
+            color:black;
+            font-size: 15px;
+
+        }
+        .container {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.2); 
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px); 
+            color: #fff;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 5em;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .custom-file {
+            margin-bottom: 20px;
+            width: 22em;
+
+        }
+
+        .custom-file-label::after {
+            color:white;
+            background-color: #5c3311e6;
+            content: "Browse";
+        }
+
+        .queri{
+            /* display: block;  */
+            
+            width: 22em;
+        }
+
+        button[type="submit"] {
+            font-size: 1.2em;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #5c3311e6;
+            color: white;
+            cursor: pointer;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #5c3311ac;
+        }
+    </style>
+</head>
+<body>
+    <div class="video-background">
+        <video autoplay muted loop>
+            <source src="/background.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+    <div class="container">
+        <div class="card">
+            <h1 >PDF to CSV Converter</h1>
+            <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <div class="custom-file">
+                        <input type="file" class="custom-file-input" id="pdfFile" name="pdfFile" required>
+                        <label class="custom-file-label" for="pdfFile">Choose file</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="text" class=" queri form-control" id="query" name="query" placeholder="Enter your query : ">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Convert and Query</button>
+            </form>
+            <p id="status" class="card-text mt-3 mb-3"></p>
+            <a id="downloadLink" href="#" class="btn btn-success btn-block" style="display:none;">Download CSV</a>
+        </div>
+    </div>
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        // Show the selected file name in the label
+        document.querySelector(".custom-file-input").addEventListener("change", function() {
+            var fileName = this.value.split("\\").pop();
+            this.nextElementSibling.classList.add("selected");
+            this.nextElementSibling.innerHTML = fileName;
+        });
+
+        // Handle form submission
+        document.getElementById("uploadForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent default form submission
+            const formData = new FormData(this);
+
+            // Display a spinner or loading message
+            document.getElementById("status").innerHTML = '<div><div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div><br>Did You Know ? <br>  <%= fact %></div>';
+            document.getElementById("downloadLink").style.display = 'none';
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Update status with query output
+                document.getElementById("status").innerHTML = 'Query Output: <br>'+data.csvPath;
+                document.getElementById("downloadLink").href = `/download?csvPath=${encodeURIComponent(data.answer)}`;
+                document.getElementById("downloadLink").style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById("status").innerHTML = 'An error occurred. Please try again.';
+            });
+        });
+    </script>
+</body>
+</html>
