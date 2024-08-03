@@ -1,0 +1,7 @@
+pypdfium2 
+pillow
+pytesseract
+google-generativeai
+python-dotenv
+
+
