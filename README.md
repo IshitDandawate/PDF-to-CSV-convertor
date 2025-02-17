@@ -4,9 +4,9 @@ This project is a web-based PDF to CSV converter that supports multilingual text
 
 # Features
 
-Accurate Data Extraction – Preserves table structures and text formatting.
-Multilingual Support – Works with multiple languages for broader accessibility.
-Cloud Deployment – Accessible from anywhere via a web interface.
+Accurate Data Extraction – Preserves table structures and text formatting
+Multilingual Support – Works with multiple languages for broader accessibility
+Cloud Deployment – Accessible from anywhere via a web interface
 Querying Capabilities – Allows users to extract specific data from PDFs
 
 # Tech Used 
